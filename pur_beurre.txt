@@ -1,0 +1,31 @@
+import mysql
+
+def search_substitue(cursor):
+    cat = input(
+        "Quel catégorie de produit souhaitez-vous comparer?\n"
+        "{#export de la table categorie#}"
+    )
+    aliment = input(
+        "Voici les aliments qui ont été enregistrés\n"
+        "dans la base de données de Pur Beurre.\n"
+        "Choisissez celui que vous voulez comparer.\n"
+        "{#export de la table aliment, sous la recherche id_cat = cat#}"
+    )
+    conclusion = input(
+        "{nom_aliment} a le nutriscore suivant: {nutriscore_aliment}\n"
+        "Il est composé de:\n"
+        "{ingredients_aliment}\n"
+        "\n\n"
+        "les produits suivants sont de bons remplaçants pour {nom_aliment}:\n"
+        "{#export de la table aliment sous la recherche id_cat = cat et nutriscore >= nutriscore_aliment.}"
+        "\n\n"
+        "Quelle action voulez-vous entreprendre?\n"
+        "Entrez le numéro du produit de substitution pour afficher sa page.\n"
+        "OU\n"
+        "00 - Enregistrer le produit et revenir au men principal\n"
+        "01 - Revenir au menu principal\n"
+    )
+    if conclusion == "00":
+        saving(cursor, aliment)
+    elif conclusion == "01":
+        main(cursor)
