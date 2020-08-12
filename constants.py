@@ -44,6 +44,6 @@ CATEGORIES = [
     'cereales-pour-petit-déjeuner'
 ]
 
-URL = "https://fr.openfoodfacts.org"
+URL = "https://fr.openfoodfacts.org/cgi/search.pl"
 MAX_PRODUCTS_IMPORT = 50
 MAX_PRODUCTS_KEEPED = 20
