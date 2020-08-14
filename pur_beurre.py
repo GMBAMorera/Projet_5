@@ -1,170 +1,146 @@
 import os
-import mysql
-from Database import Database
+import time
 
-from constants import DB_NAME
+from database.database import DataBase
+from discussions import (
+    WELCOME, GOODBYE, CATEGORIES_PRESENTATION,
+    SELECT_CAT, AL_PRESENTATION, SELECT_AL,
+    PRESENT_SUBST, SUBST_PRESENTATION, M_1, M_2, MP, Q, I,
+    MAIN_MENU, SUBST_MENU, SAVE_MENU, MAIN_OR_QUIT,
+    SAVE_ANSWERS, MAIN_ANSWERS, BACK_ANSWERS,
+    ID_NAME_FORMAT, ID_NAME_NUTR_FORMAT, NOT_AN_ANSWER
+)
+from database.instructions import (
+    TABLE_CAT, TABLE_AL, TABLE_SUBST, ALL_CAT_AL, ALL_SUBST_AL, VOID
+)
 
-class Engine:
+class Engine(DataBase):
     """ Main class, running the Pur Beurre application."""
-
-
+    
     def __init__(self):
-        self.db = Database()
-
+        super().__init__()
 
     def main(self):
-        os.system('cls')
-        
-        print(
-            "\n\n"
-            "Bienvenue dans l'application Pur Beurre!\n"
-            "\n"
-        )
-        a = self._safety_answers(
-            "Que souhaitez-vous faire?\n"
-            "1    - Rechercher un substitut à un produit.\n"
-            "2    - lire la liste des substituts.\n"
-            "00   - Quitter le programme.\n"
-            "Init - Initialiser ou Réinitialiser la base de donnée.\n",
-            ["1", "2", "00", "Init"]
-        )
+        os.system("cls")
 
-        if a == "1":
-            self._search_prod()
-        elif a == "2":
+        print(WELCOME)
+        a = self._safety_answers(MAIN_MENU, MAIN_ANSWERS)
+
+        if a == M_1:
+            self._search_subst()
+        elif a == M_2:
             self._show_subst()
-        elif a == "00":
+        elif a == Q:
             self._quit()
-        elif a == "Init":
-            self.db.initialize()
+        elif a == I:
+            self.initialize()
             self.main()
 
+    def _search_subst(self, al_id=None):
+        if al_id is None:
+            cat_id = self._search_cat()
+            al_id = self._search_prod(cat_id)
 
-    def _search_prod(self):
-        os.system('cls')
-        
+        os.system("cls")
+        data = self.load_data(al_id, product_view="Yes")
+
+        substitutes = self.load_table(
+            TABLE_AL,
+            ALL_SUBST_AL.format(data.id, data.cat_id, data.nutriscore),
+            PRESENT_SUBST.format(data.name),
+            ID_NAME_NUTR_FORMAT
+        )
+        subst = self._select_subst(substitutes)
+        if subst is not None:
+            self._join_save(data, subst)
+
+    def _search_cat(self):
         # Choose between categories
-        categories = self.db.load_table(
-            "categories",
-            "",
-            "Voici la liste des catégories suivis par notre plateforme:",
-            "{} - {}"
+        categories = self.load_table(
+            TABLE_CAT,
+            VOID,
+            CATEGORIES_PRESENTATION,
+            ID_NAME_FORMAT
         )
 
         cat_id = self._safety_answers(
-            "Veuillez indiquer le numéro de la catégorie que vous souhaitez évaluer.\n",
-            [cat[0] for cat in categories.array]
+            SELECT_CAT,
+            [cat.id for cat in categories.array]
         )
+        return cat_id
+
+    def _search_prod(self, cat_id):
+        os.system("cls")
 
         # Choose between products
-        products = self.db.load_table(
-            "aliments",
-            f"WHERE cat_id={cat_id}",
-            "Voici, pour la catégorie que vous avez choisis,"
-            "les aliments qui sont suivis par Pur Beurre.",
-            "{} - {}"
+        products = self.load_table(
+            TABLE_AL,
+            ALL_CAT_AL.format(cat_id),
+            AL_PRESENTATION,
+            ID_NAME_FORMAT
         )
 
         al_id = self._safety_answers(
-            "Veuillez indiquer le numéro de l'aliment que vous souhaitez évaluer.\n",
+            SELECT_AL,
             [prod.id for prod in products.array]
         )
+        return al_id
 
-        self._search_subst(al_id)
-
-
-    def _search_subst(self, al_id):
-        os.system('cls')
-        data = self.db.load_data(al_id, product_view="Yes")
-
-        substitutes = self.db.load_table(
-            "aliments",
-            f"WHERE id != {data.id} AND cat_id = {data.cat_id} AND nutriscore <= '{data.nutriscore}'",
-            f"\nles produits suivants sont de bons substituts pour {data.name}:\n",
-            "{} - {} (nutriscore: {})"
-        )
-
+    def _select_subst(self, substitutes):
         conclusion = self._safety_answers(
-            "Quelle action souhaitez-vous entreprendre?\n"
-            "Entrez le numéro d'un produit alternatif "
-            "pour afficher le détail de sa composition.\n"
-            "OU\n"
-            "MP - Revenir au menu principal.\n"
-            "00 - Quitter l'application.\n",
-            [s.id for s in substitutes.array] + ["MP", "00"]
+            SUBST_MENU,
+            [s.id for s in substitutes.array] + BACK_ANSWERS
         )
-        if conclusion == "MP":
+        if conclusion == MP:
             self.main()
-            return
-        elif conclusion == "00":
+            return None
+        elif conclusion == Q:
             self._quit()
-            return
+            return None
         else:
-            subst = self.db.load_data(conclusion, product_view="Yes")
+            subst = self.load_data(conclusion, product_view="Yes")
+            return subst
 
-        conclusion = self._safety_answers(
-            "\n\n"
-            "Voulez-vous:\n"
-            "1  - Choisir ce produit comme substitut.\n"
-            "OU\n"
-            "2  - Revenir au choix de substituts.\n"
-            "MP - Revenir au menu principal.\n"
-            "00 - Quitter l'application.\n",
-            ["1", "2", "MP", "00"]
-        )
-        if conclusion == "1":
-            self.db._save_subst(data, subst)
+    def _join_save(self, data, subst):
+        conclusion = self._safety_answers(SAVE_MENU, SAVE_ANSWERS)
+        if conclusion == M_1:
+            self.save_subst(data, subst)
+            time.sleep(3)
             self._search_subst(data.id)
-        elif conclusion == "MP":
+        elif conclusion == MP:
             self.main()
-        elif conclusion == "00":
+        elif conclusion == Q:
             self._quit()
         else:
             self._search_subst(data.id)
-
 
     def _quit(self):
-        print(
-            "Merci d'avoir choisi Pur Beurre"
-            " dans votre lutte pour un alimentation plus saine!\n"
-            "Nous espérons vous revoir bientôt."
-        )
-        self.db.close()
+        print(GOODBYE)
+        self.close()
         return
 
-
     def _show_subst(self):
-        substitutions = self.db.load_table(
-            "substitutions",
-            intro="Voici, pour chaque produit"
-                  " le produits de substitution"
-                  " que vous avez sauvegardés:"
-        )
-        for prod_id, subst_id in substitutions.array:
-            print(f"{self.db.load_data(prod_id).name} - {self.db.load_data(subst_id).name}")
-        
-        ans = self._safety_answers(
-            "Que souhaitez-vous faire?\n"
-            "MP - Menu Principal\n"
-            "00 - Quitter le programme.\n",
-            ["MP", "00"]
-        )
-        if ans == "MP":
-            self.main()
-        elif ans == "00":
-            self._quit()
+        self.print_subst()
 
+        ans = self._safety_answers(MAIN_OR_QUIT, BACK_ANSWERS)
+        if ans == MP:
+            self.main()
+        elif ans == Q:
+            self._quit()
 
     def _safety_answers(self, question, answers):
         """Ask a question and verify that it is rightly answered."""
         answers = [str(a) for a in answers]
         ans = input(question)
         while ans not in answers:
-            print("Je suis désolé, je n'ai pas compris votre réponse.")
+            print(NOT_AN_ANSWER)
             ans = input(question)
         return ans
 
 
 if __name__ == "__main__":
     main = Engine()
-    main.main()
+    try:
+        main.main()
+    except:
+        main.erase()
