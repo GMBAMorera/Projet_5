@@ -1,10 +1,13 @@
-
+"""Data class is the archetype of a row inside the aliment table.
+Can also, sometimes, be used for categorie table, by analogy.
+"""
 
 class Data:
     """ Class of data, as seen in Pur Beurre database."""
 
     def __init__(self, identity, name,
                  nutriscore=None, ingredients=None, cat_id=None):
+        """ As per the columns of aliment's table."""
         self.id = identity
         self.name = name
         self.nutriscore = nutriscore

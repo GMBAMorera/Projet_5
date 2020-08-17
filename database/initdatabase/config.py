@@ -1,6 +1,5 @@
-USER = "root"
-PASSWORD = "8&4Douze!"
-DB_NAME = "pur_beurre"
+"""All info needed for OpenFoodFact API searchs."""
+
 
 PRODUCTS_FIELDS = {
     "product_name_fr": "name",

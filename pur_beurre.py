@@ -1,3 +1,6 @@
+""" Main file, with the pur beurre menu and architecture."""
+
+
 import os
 import time
 
@@ -16,11 +19,13 @@ from database.instructions import (
 
 class Engine(DataBase):
     """ Main class, running the Pur Beurre application."""
-    
+
     def __init__(self):
+        """ Go fetch the connector for querying mysql table."""
         super().__init__()
 
     def main(self):
+        """ Run Pur Beurre Menu."""
         os.system("cls")
 
         print(WELCOME)
@@ -37,6 +42,7 @@ class Engine(DataBase):
             self.main()
 
     def _search_subst(self, al_id=None):
+        """ Search for a substitute, given an aliment or not."""
         if al_id is None:
             cat_id = self._search_cat()
             al_id = self._search_prod(cat_id)
@@ -55,7 +61,7 @@ class Engine(DataBase):
             self._join_save(data, subst)
 
     def _search_cat(self):
-        # Choose between categories
+        """Ask for the good category."""
         categories = self.load_table(
             TABLE_CAT,
             VOID,
@@ -70,6 +76,7 @@ class Engine(DataBase):
         return cat_id
 
     def _search_prod(self, cat_id):
+        """Ask for the good product."""
         os.system("cls")
 
         # Choose between products
@@ -87,6 +94,7 @@ class Engine(DataBase):
         return al_id
 
     def _select_subst(self, substitutes):
+        """ Ask for one aliment who will serve as a substitute."""
         conclusion = self._safety_answers(
             SUBST_MENU,
             [s.id for s in substitutes.array] + BACK_ANSWERS
@@ -98,10 +106,10 @@ class Engine(DataBase):
             self._quit()
             return None
         else:
-            subst = self.load_data(conclusion, product_view="Yes")
-            return subst
+            return self.load_data(conclusion, product_view="Yes")
 
     def _join_save(self, data, subst):
+        """ Save a product as a substitute for another."""
         conclusion = self._safety_answers(SAVE_MENU, SAVE_ANSWERS)
         if conclusion == M_1:
             self.save_subst(data, subst)
@@ -115,11 +123,13 @@ class Engine(DataBase):
             self._search_subst(data.id)
 
     def _quit(self):
+        """quit the Pur Beurre software."""
         print(GOODBYE)
         self.close()
         return
 
     def _show_subst(self):
+        """ Show all saved products and substitutes."""
         self.print_subst()
 
         ans = self._safety_answers(MAIN_OR_QUIT, BACK_ANSWERS)
@@ -140,7 +150,4 @@ class Engine(DataBase):
 
 if __name__ == "__main__":
     main = Engine()
-    try:
-        main.main()
-    except:
-        main.erase()
+    main.main()

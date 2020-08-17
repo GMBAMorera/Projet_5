@@ -1,3 +1,7 @@
+"""Contain, for all files, print discussion
+with the user of Pur Beurre.
+"""
+
 ### MAIN ###
 WELCOME = (
     "\n\n"

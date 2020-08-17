@@ -1,15 +1,20 @@
+"""High level operation on the database:
+creation, initialisation, deletion and closure.
+"""
+
+
 from requests import get
 from mysql.connector import connect
 import time
 
 from database.initdatabase.config import (
-    USER, PASSWORD, CATEGORIES, URL,
-    MAX_PRODUCTS_IMPORT, MAX_PRODUCTS_KEEPED,
-    PRODUCTS_FIELDS, DB_NAME
+    CATEGORIES, URL, MAX_PRODUCTS_IMPORT,
+    MAX_PRODUCTS_KEEPED, PRODUCTS_FIELDS
 )
 from database.instructions import (
-    TABLES, DROP, USE, CREATE, CAT_ROW, TABLE_AL,
-    FILL_CAT, SELECT_TABLE, TABLE_CAT, AL_ROW, INSERT_AL
+    USER, PASSWORD, DB_NAME, TABLES, DROP, USE, CREATE,
+    CAT_ROW, TABLE_AL, FILL_CAT, SELECT_TABLE,
+    TABLE_CAT, AL_ROW, INSERT_AL
 )
 from discussions import (
     INIT_DB, FAIL_INIT_DB, ERASE_DB, SUCCESS_INIT_DB,
@@ -20,31 +25,34 @@ from discussions import (
 
 class InitDataBase:
     def __init__(self):
+        """create a connector for mysql instructions
+        and try to connect with the database."""
 
         self.cnx = connect(user=USER, password=PASSWORD)
         self.cursor = self.cnx.cursor()
 
         try:
             self.cursor.execute(USE.format(DB_NAME))
-        except:
+        except Exception:
             print(INIT_DB)
             try:
                 self.initialize()
-            except:
+            except Exception:
                 print(FAIL_INIT_DB)
                 self.erase()
-                raise
 
     def close(self):
+        """ Close the database."""
         self.cursor.close()
         self.cnx.close()
 
     def erase(self):
+        """ Erase the database."""
         self.cursor.execute(DROP.format(DB_NAME))
         print(ERASE_DB)
 
-
     def initialize(self):
+        """ Initializa the database."""
         # Creating database
         self._create()
 
@@ -61,9 +69,12 @@ class InitDataBase:
         time.sleep(3)
 
     def _create(self):
+        """Create a new database,
+        and ensure that it will be created on a blank page.
+        """
         try:
             self.cursor.execute(DROP.format(DB_NAME))
-        except:
+        except Exception:
             pass
 
         self.cursor.execute(CREATE.format(DB_NAME))
@@ -71,18 +82,24 @@ class InitDataBase:
         self.cursor.execute(USE.format(DB_NAME))
 
     def _formate(self):
+        """ Create all database's tables."""
         for table_name, table_instruction in TABLES.items():
             print(CREATE_TB.format(table_name))
             self.cursor.execute(table_instruction)
 
     def _fill_categories(self):
+        """ fill the categories table."""
         # Fill category table
         instructions = ", ".join([CAT_ROW.format(cat) for cat in CATEGORIES])
         instructions = (FILL_CAT.format(instructions))
         self.cursor.execute(instructions)
+        self.cnx.commit()
         print(CREATE_TB_SUCCESS.format(TABLE_CAT))
 
     def _find(self):
+        """ Find enough data inside OpenFoodFact API
+        to feed the aliments table.
+        """
         self.cursor.execute(SELECT_TABLE.format(TABLE_CAT))
 
         aliments = []
@@ -93,7 +110,7 @@ class InitDataBase:
             al_name = []
             while len(cat_al) < MAX_PRODUCTS_KEEPED:
                 import_al = self._scratch_category(cat, n_page)
-                if len(import_al) == 0:
+                if not import_al:
                     raise CAT_FINDING_FAIL.format(cat)
 
                 cat_al = self._try_aliment_list(cat, cat_id, cat_al,
@@ -105,9 +122,13 @@ class InitDataBase:
         return aliments
 
     def _try_aliment_list(self, cat, cat_id, cat_al, long_aliments, al_name):
+        """Check for all data of a search page of the API
+        that data are intersting enough to be used on Pur Beurre,
+        discarding them otherwise.
+        """
         for al in long_aliments:
             try:
-                product, name, ing = self.create_row(al, cat_id)
+                product, name, ing = self._create_row(al, cat_id)
             except KeyError:
                 continue
 
@@ -121,7 +142,8 @@ class InitDataBase:
             al_name.append(name)
         return cat_al
 
-    def create_row(self, al, cat_id):
+    def _create_row(self, al, cat_id):
+        """ Format data along a VALUE mysql instruction."""
         row = (
             "NULL",
             al['product_name_fr'].replace("'", " "),
@@ -134,6 +156,7 @@ class InitDataBase:
         return AL_ROW.format(*row), name, ing
 
     def _scratch_category(self, cat, n_page):
+        """Extract one page of data of the API."""
         payload = {
             "action": "process",
             "tagtype_0": "categories",
@@ -150,8 +173,9 @@ class InitDataBase:
         return al_list["products"]
 
     def _fill(self, aliments):
-        # Fill aliments table
+        """ Fill aliments table."""
         aliments = ", ".join(aliments)
         instructions = " ".join((INSERT_AL, aliments)) 
         self.cursor.execute(instructions)
+        self.cnx.commit()
         print(CREATE_TB_SUCCESS.format(TABLE_AL))

@@ -1,4 +1,9 @@
-### DATABASE ###
+""" All mysql instruction that the cursor will execute
+during initialisation and work upon Pur Beurre.
+"""
+
+
+### DATABASE.PY ###
 SELECT_DATA = (
     "SELECT id, name, nutriscore, ingredients, cat_id FROM aliments"
     " WHERE id = {}"
@@ -23,8 +28,11 @@ SELECT_SUBST = (
 )
 
 
+### INITDATABASE.PY ###
+USER = "root"
+PASSWORD = "8&4Douze!"
+DB_NAME = "pur_beurre"
 
-### INITDATABASE ###
 USE = "USE {}"
 DROP = "DROP DATABASE {}"
 CREATE = "CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'"
@@ -74,8 +82,7 @@ TABLES['substitutions'] = (
 )
 
 
-
-### MAIN ###
+### MAIN.PY ###
 TABLE_CAT = "categories"
 TABLE_AL = "aliments"
 TABLE_SUBST = "substitutions"
