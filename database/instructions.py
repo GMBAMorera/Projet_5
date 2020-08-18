@@ -11,7 +11,7 @@ SELECT_DATA = (
 SELECT_TABLE = "SELECT * FROM {}"
 
 UPDATE_SUBST = (
-    "UPDATE substitions"
+    "UPDATE substitutions"
     " SET subst_id={} WHERE prod_id={}"
 )
 INSERT_SUBST = (
@@ -30,7 +30,7 @@ SELECT_SUBST = (
 
 ### INITDATABASE.PY ###
 USER = "root"
-PASSWORD = "8&4Douze!"
+PASSWORD = "password"
 DB_NAME = "pur_beurre"
 
 USE = "USE {}"
@@ -69,7 +69,7 @@ TABLES['aliments'] = (
 )
 TABLES['substitutions'] = (
     "CREATE TABLE substitutions("
-    "    prod_id TINYINT NOT NULL,"
+    "    prod_id TINYINT NOT NULL PRIMARY KEY,"
     "    subst_id TINYINT NOT NULL,"
     "    CONSTRAINT fk_prod"
     "        FOREIGN KEY (prod_id)"

@@ -12,7 +12,10 @@ from database.instructions import (
     SELECT_DATA, SELECT_TABLE, SELECT_SUBST,
     UPDATE_SUBST, INSERT_SUBST, TABLE_AL, SPACE
 )
-from discussions import PRODUCT_VIEW, VALID_SUBST, SEPARATOR, SUBST_FORMAT
+from discussions import (
+    PRODUCT_VIEW, VALID_SUBST, SEPARATOR,
+    SUBST_FORMAT, SUBST_PRESENTATION
+)
 
 
 class DataBase(InitDataBase):
@@ -60,17 +63,18 @@ class DataBase(InitDataBase):
     def save_subst(self, prod, subst):
         """Update substitution table with new subst data."""
         try:
-            self.cursor.execute(UPDATE_SUBST.format(subst.id, prod.id))
-            self.cnx.commit()
-        except Exception:
             self.cursor.execute(INSERT_SUBST.format(prod.id, subst.id))
             self.cnx.commit()
-        print(VALID_SUBST.format(prod.name, subst.name))
+        except Exception:
+            self.cursor.execute(UPDATE_SUBST.format(subst.id, prod.id))
+            self.cnx.commit()
+        print(VALID_SUBST.format(subst.name, prod.name))
 
     def print_subst(self):
         """Show the substitution table."""
         self.cursor.execute(SELECT_SUBST)
 
         print(SEPARATOR)
+        print(SUBST_PRESENTATION)
         for c in self.cursor:
             print(SUBST_FORMAT.format(*c))

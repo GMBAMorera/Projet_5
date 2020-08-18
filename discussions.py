@@ -38,7 +38,7 @@ PRESENT_SUBST = (
 
 SUBST_PRESENTATION = (
     "Voici, pour chaque produit, le produit"
-    " de substitution que vous avez sauvegardé:"
+    " de substitution que vous avez sauvegardé:\n"
 )
 
 M_1 = "1"
@@ -101,7 +101,7 @@ PRODUCT_VIEW = (
 VALID_SUBST = (
     "{} a bien été enregistré comme le produit de substition de {}"
 )
-SEPARATOR = "\n\n-------------------------------------------\n"
+SEPARATOR = "\n\n-------------------------------------------"
 SUBST_FORMAT = "{}: {}"
 
 
