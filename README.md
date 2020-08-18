@@ -11,14 +11,23 @@ Pour installer **Pur Beurre**, commencez par vous connecter sur [sa page](https:
 Telecharger l'application simplement en cliquant sur le bouton vert à droite de ses fichiers et en choisssant l'option Download ZIP.  
 Une fois sur votre disque dur, récupérez le fichier ZIP, posez-le dans le dossier où vous voulez installer **Pur Beurre** et décompressez-le avec l'application de votre choix.  
 Entrer dans le dossier Pur_Beurre ainsi créé. Ouvrez-le et copiez son chemin d'accès.
-[Installez l'environnement virtuel dans l'invite de commande]  
+OUvrez ensuite la console windows, par exemple en tapant 'cmd' dans le menu démarrer, puis basez-la dans le dossier Pur_Beurre en utilisan la commande:  
+    cd chemin_d_acces_do_dossier
+Tapez ensuite la commande:  
+    python -m venv env
+afin de constuire un envorionnement de travail apte à le lancer.  
+Puis, activez-le avec la commande:
+    env\Scripts\activate.bat
+Et installez les bibliothèques nécessaires avec:
+    pip install -r requirements.txt  
+Pur Beurre est prête à être utilisé.
   
 ## Utilisation  
 Pour utiliser **Pur Beurre**, rien de plus facile!
 Ouvrez simplement une invite de commande, par exemple en tapant 'cmd' dans le menu windows, puis basez-la dans le dossier Pur_Beurre en utilisant la commande:  
-    cd chemin_d_acces_du_fichier  
+    cd chemin_d_acces_du_dossier  
 Une fois fait, activez l'environnement virtuel avec la commande:
-    venv\Scripts\activate  
+    env\Scripts\activate  
 Puis, tapez la commande:
     python pur_beurre.py  
 et laissez_vous guider!  
