@@ -24,4 +24,4 @@ class Data:
         self.i += 1
         if self.i == len(self._iterate):
             raise StopIteration
-        return self.iterate[self.i]
+        return self._iterate[self.i]
