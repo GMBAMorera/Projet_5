@@ -16,5 +16,4 @@ CATEGORIES = [
 ]
 
 URL = "https://fr.openfoodfacts.org/cgi/search.pl"
-MAX_PRODUCTS_IMPORT = 50
 MAX_PRODUCTS_KEEPED = 20

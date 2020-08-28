@@ -8,8 +8,7 @@ from mysql.connector import connect
 import time
 
 from database.initdatabase.config import (
-    CATEGORIES, URL, MAX_PRODUCTS_IMPORT,
-    MAX_PRODUCTS_KEEPED, PRODUCTS_FIELDS
+    CATEGORIES, URL, MAX_PRODUCTS_KEEPED, PRODUCTS_FIELDS
 )
 from database.instructions import (
     USER, PASSWORD, DB_NAME, TABLES, DROP, USE, CREATE,

@@ -14,7 +14,7 @@ from discussions import (
     ID_NAME_FORMAT, ID_NAME_NUTR_FORMAT, NOT_AN_ANSWER
 )
 from database.instructions import (
-    TABLE_CAT, TABLE_AL, TABLE_SUBST, ALL_CAT_AL, ALL_SUBST_AL, VOID
+    TABLE_CAT, TABLE_AL, ALL_CAT_AL, ALL_SUBST_AL, VOID
 )
 
 class Engine(DataBase):

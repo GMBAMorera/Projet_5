@@ -10,7 +10,7 @@ from database.initdatabase.initdatabase import InitDataBase
 
 from database.instructions import (
     SELECT_DATA, SELECT_TABLE, SELECT_SUBST,
-    UPDATE_SUBST, INSERT_SUBST, TABLE_AL, SPACE
+    UPDATE_SUBST, INSERT_SUBST
 )
 from discussions import (
     PRODUCT_VIEW, VALID_SUBST, SEPARATOR,

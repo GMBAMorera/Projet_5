@@ -24,7 +24,7 @@ SELECT_SUBST = (
     " INNER JOIN aliments as prod"
     " ON substitutions.prod_id = prod.id"
     " INNER JOIN aliments as subst"
-    " ON substitutions. subst_id = subst.id"
+    " ON substitutions.subst_id = subst.id"
 )
 
 
@@ -82,7 +82,7 @@ TABLES['substitutions'] = (
 )
 
 
-### MAIN.PY ###
+### PUR_BEURRE.PY ###
 TABLE_CAT = "categories"
 TABLE_AL = "aliments"
 TABLE_SUBST = "substitutions"
