@@ -13,7 +13,7 @@ class Data:
         self.nutriscore = nutriscore
         self.ingredients = ingredients
         self.cat_id = cat_id
-        self.iterate = (self.id, self.name,
+        self._iterate = (self.id, self.name,
                         self.nutriscore, self.ingredients, self.cat_id)
 
     def __iter__(self):
@@ -22,6 +22,6 @@ class Data:
 
     def __next__(self):
         self.i += 1
-        if self.i == len(self.iterate):
+        if self.i == len(self._iterate):
             raise StopIteration
         return self.iterate[self.i]
