@@ -17,11 +17,11 @@ class Data:
                         self.nutriscore, self.ingredients, self.cat_id)
 
     def __iter__(self):
-        self.i = -1
+        self._i = -1
         return self
 
     def __next__(self):
         self._i += 1
         if self._i == len(self._iterate):
             raise StopIteration
-        return self._iterate[self.i]
+        return self._iterate[self._i]
