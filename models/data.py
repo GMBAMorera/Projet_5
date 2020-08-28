@@ -21,7 +21,7 @@ class Data:
         return self
 
     def __next__(self):
-        self.i += 1
-        if self.i == len(self._iterate):
+        self._i += 1
+        if self._i == len(self._iterate):
             raise StopIteration
         return self._iterate[self.i]
